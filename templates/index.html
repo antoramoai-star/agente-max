@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Max - Tu Agente Personal</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; color: #1a1a1a; height: 100vh; display: flex; flex-direction: column; }
+.header { background: #fff; border-bottom: 1px solid #e5e5e5; padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 18px; font-weight: 500; }
+.header p { font-size: 13px; color: #888; }
+.tabs { display: flex; background: #fff; border-bottom: 1px solid #e5e5e5; padding: 0 24px; }
+.tab { padding: 12px 20px; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; transition: all 0.2s; }
+.tab.active { color: #1a1a1a; border-bottom-color: #1a1a1a; }
+.content { flex: 1; overflow: hidden; display: flex; }
+.panel { display: none; flex: 1; overflow-y: auto; padding: 24px; }
+.panel.active { display: flex; flex-direction: column; gap: 16px; }
+.chat-container { flex: 1; display: flex; flex-direction: column; max-width: 680px; margin: 0 auto; width: 100%; }
+.messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; min-height: 300px; }
+.message { display: flex; gap: 10px; align-items: flex-start; }
+.message.user { flex-direction: row-reverse; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: #e5e5e5; display: flex; align-items: center; justify-content: center; font-size: 14px; flex-shrink: 0; }
+.message.user .avatar { background: #1a1a1a; color: #fff; }
+.bubble { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 10px 14px; font-size: 14px; line-height: 1.6; max-width: 80%; }
+.message.user .bubble { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.chat-input { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-top: 1px solid #e5e5e5; background: #fff; width: 100%; box-sizing: border-box; }
+.chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+.chat-input textarea, .chat-input input { flex: 1; padding: 12px 14px; border: 1px solid #e5e5e5; border-radius: 12px; font-size: 14px; outline: none; resize: none; min-height: 120px; max-height: 400px; overflow-y: auto; line-height: 1.6; font-family: inherit; }
+.chat-input textarea:focus, .chat-input input:focus { border-color: #1a1a1a; }
+.btn-send { padding: 10px 20px; background: #1a1a1a; color: #fff; border: none; border-radius: 8px; font-size: 14px; cursor: pointer; transition: opacity 0.2s; }
+.btn-send:hover { opacity: 0.8; }
+
+/* BOTON MICROFONO */
+.btn-mic { width: 42px; height: 42px; border-radius: 50%; background: #f5f5f5; border: 1px solid #e5e5e5; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; flex-shrink: 0; }
+.btn-mic:hover { background: #e5e5e5; }
+.btn-mic.recording { background: #ff4444; border-color: #ff4444; animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+.mic-status { font-size: 12px; color: #888; text-align: center; margin-top: 6px; }
+.mic-status.recording { color: #ff4444; font-weight: 500; }
+
+.records-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+.stat-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 16px; text-align: center; }
+.stat-label { font-size: 12px; color: #888; margin-bottom: 6px; }
+.stat-value { font-size: 28px; font-weight: 500; }
+.record-list { display: flex; flex-direction: column; gap: 8px; }
+.record-item { background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; }
+.tipo { font-size: 12px; font-weight: 500; padding: 3px 8px; border-radius: 20px; background: #f0f0f0; }
+.tipo.comida { background: #fef3c7; color: #92400e; }
+.tipo.ejercicio { background: #dbeafe; color: #1e40af; }
+.tipo.tarea { background: #d1fae5; color: #065f46; }
+.record-contenido { font-size: 14px; flex: 1; margin: 0 12px; }
+.record-hora { font-size: 12px; color: #888; }
+.resumen-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 12px; padding: 20px; }
+.resumen-card h2 { font-size: 16px; font-weight: 500; margin-bottom: 12px; }
+.resumen-text { font-size: 14px; line-height: 1.7; color: #333; white-space: pre-wrap; }
+.btn { padding: 10px 20px; border: 1px solid #e5e5e5; border-radius: 8px; font-size: 14px; cursor: pointer; background: #fff; transition: all 0.2s; }
+.btn:hover { background: #f5f5f5; }
+.btn-dark { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.btn-dark:hover { opacity: 0.8; background: #1a1a1a; }
+.quick-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+.quick-btn { padding: 8px 14px; background: #f5f5f5; border: 1px solid #e5e5e5; border-radius: 20px; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.quick-btn:hover { background: #e5e5e5; }
+
+        .chat-input {
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            padding: 12px;
+        }
+        .chat-input textarea {
+            flex: 1;
+            resize: none;
+            min-height: 44px;
+            max-height: 240px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 16px;
+            line-height: 1.4;
+            overflow-y: auto;
+            box-sizing: border-box;
+        }
+        .chat-input textarea:focus {
+            outline: none;
+            border-color: #000;
+        }
+        .btn-mic {
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            font-size: 20px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .btn-mic.recording {
+            background: #ff4444;
+            color: white;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+        .btn-send {
+            background: #000;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 12px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+            height: 44px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Max - Tu Agente Personal</h1>
+    <p id="fecha"></p>
+  </div>
+  <div id="contadorHoy" style="font-size: 13px; color: #888;"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="mostrarTab('chat')">Chat</div>
+  <div class="tab" onclick="mostrarTab('registros')">Registros</div>
+  <div class="tab" onclick="mostrarTab('resumen')">Resumen del Día</div>
+</div>
+
+<div class="content">
+  <div class="panel active" id="tab-chat">
+    <div class="chat-container">
+      <div class="messages" id="messages">
+        <div class="message">
+          <div class="avatar">M</div>
+          <div class="bubble">Hola! Soy Max, tu agente personal 💪<br><br>Puedes escribirme o usar el micrófono 🎤 para hablarme. Cuéntame qué comiste, qué ejercitaste, o qué tareas completaste.</div>
+        </div>
+      </div>
+      <div class="quick-btns" style="margin-bottom: 8px;">
+        <button class="quick-btn" onclick="enviarRapido('Desayuné ')">🥗 Desayuno</button>
+        <button class="quick-btn" onclick="enviarRapido('Entrené ')">💪 Ejercicio</button>
+        <button class="quick-btn" onclick="enviarRapido('Completé la tarea: ')">✓ Tarea</button>
+        <button class="quick-btn" onclick="enviarRapido('Almorcé ')">🍽️ Almuerzo</button>
+      </div>
+        <div class="chat-input">
+          <textarea id="chatInput" placeholder="Escribe o usa el micrófono... (Ctrl+Enter para enviar)" style="width:100%;min-height:80px;max-height:400px;padding:12px 14px;border:1px solid #e5e5e5;border-radius:12px;font-size:14px;line-height:1.6;resize:none;outline:none;font-family:inherit;box-sizing:border-box;"></textarea>
+          <div style="display:flex;justify-content:flex-end;align-items:center;gap:8px;margin-top:8px;">
+            <span id="micStatus" style="font-size:12px;color:#888;flex:1;"></span>
+            <button class="btn-mic" id="btnMic" onclick="toggleMic()">🎤</button>
+            <button class="btn-send" onclick="enviarMensaje()">Enviar</button>
+          </div>
+      </div>
+      <div class="mic-status" id="micStatus"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="tab-registros">
+    <div class="records-grid" id="statsGrid"></div>
+    <div class="record-list" id="recordList"><p style="color:#888; font-size:14px;">Cargando registros...</p></div>
+  </div>
+
+  <div class="panel" id="tab-resumen">
+    <button class="btn btn-dark" onclick="generarResumen()" style="align-self: flex-start;">📊 Generar Resumen del Día</button>
+    <div class="resumen-card" id="resumenCard" style="display: none;">
+      <h2>Tu día de hoy</h2>
+      <div class="resumen-text" id="resumenText"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.getElementById('fecha').textContent = new Date().toLocaleDateString('es-ES', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+let historial = [];
+
+async function cargarHistorial() {
+  const res = await fetch('/api/historial_chat');
+  const mensajes = await res.json();
+  if (mensajes.length > 0) {
+    document.getElementById('messages').innerHTML = '';
+  }
+  mensajes.forEach(function(m) {
+    var esUsuario = m.rol === 'user';
+    agregarMensaje(m.contenido, esUsuario);
+    historial.push({role: m.rol, content: m.contenido});
+  });
+}
+let grabando = false;
+let reconocimiento = null;
+
+function mostrarTab(tab) {
+  document.querySelectorAll('.tab').forEach(function(t, i) {
+    t.classList.toggle('active', ['chat','registros','resumen'][i] === tab);
+  });
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'registros') cargarRegistros();
+}
+
+function agregarMensaje(texto, esUsuario) {
+  var msgs = document.getElementById('messages');
+  var div = document.createElement('div');
+  div.className = 'message' + (esUsuario ? ' user' : '');
+  div.innerHTML = '<div class="avatar">' + (esUsuario ? 'Tú' : 'M') + '</div><div class="bubble">' + texto + '</div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function enviarRapido(texto) {
+  document.getElementById('chatInput').value = texto;
+  document.getElementById('chatInput').focus();
+}
+
+function enviarMensaje() {
+  var input = document.getElementById('chatInput');
+  var mensaje = input.value.trim();
+  if (!mensaje) return;
+  input.value = '';
+  input.style.height = '44px';
+  agregarMensaje(mensaje, true);
+  agregarMensaje('...', false);
+  fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({mensaje: mensaje, historial: historial})
+  }).then(function(res) { return res.json(); }).then(function(data) {
+    document.getElementById('messages').lastChild.remove();
+    agregarMensaje(data.respuesta, false);
+    historial.push({role:'user', content:mensaje});
+    historial.push({role:'assistant', content:data.respuesta});
+    cargarHistorial();
+actualizarContador();
+  }).catch(function() {
+    document.getElementById('messages').lastChild.remove();
+    agregarMensaje('Error al conectar.', false);
+  });
+}
+
+function toggleMic() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    alert('Tu navegador no soporta el micrófono');
+    return;
+  }
+  if (grabando) {
+    if (reconocimiento) reconocimiento.stop();
+    grabando = false;
+    document.getElementById('btnMic').classList.remove('recording');
+    document.getElementById('micStatus').textContent = '';
+    document.getElementById('micStatus').classList.remove('recording');
+    return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  reconocimiento = new SR();
+  reconocimiento.lang = 'es-ES';
+  reconocimiento.continuous = true;
+  reconocimiento.interimResults = true;
+  reconocimiento.onstart = function() {
+    grabando = true;
+    document.getElementById('btnMic').classList.add('recording');
+    document.getElementById('micStatus').textContent = '🎤 Escuchando... (presiona de nuevo para detener)';
+    document.getElementById('micStatus').classList.add('recording');
+  };
+  reconocimiento.onresult = function(e) {
+    var textoFinal = '';
+    var textoInterino = '';
+    for (var i = 0; i < e.results.length; i++) {
+      if (e.results[i].isFinal) {
+        textoFinal += e.results[i][0].transcript;
+      } else {
+        textoInterino += e.results[i][0].transcript;
+      }
+    }
+    document.getElementById('chatInput').value = textoFinal + textoInterino;
+  };
+  reconocimiento.onerror = function(e) {
+    grabando = false;
+    document.getElementById('btnMic').classList.remove('recording');
+    document.getElementById('micStatus').textContent = 'Error: ' + e.error;
+  };
+  reconocimiento.onend = function() {
+    if (grabando) {
+      reconocimiento.start();
+    }
+  };
+  reconocimiento.start();
+}
+
+function actualizarContador() {
+  fetch('/api/registros').then(r=>r.json()).then(data=>{
+    document.getElementById('contadorHoy').textContent = data.length + ' registros hoy';
+  });
+}
+
+function cargarRegistros() {
+  fetch('/api/registros').then(r=>r.json()).then(data=>{
+    var panel = document.getElementById('tab-registros');
+    panel.innerHTML = '';
+    if (!data.length) { panel.innerHTML = '<p style="padding:20px">No hay registros hoy.</p>'; return; }
+    data.forEach(function(r) {
+      var d = document.createElement('div');
+      d.className = 'registro-item';
+      d.innerHTML = '<strong>' + r.hora + '</strong> ' + r.contenido;
+      panel.appendChild(d);
+    });
+  });
+}
+
+document.getElementById('chatInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); enviarMensaje(); }
+});
+
+cargarHistorial();
+actualizarContador();
+setInterval(actualizarContador, 30000);
+
+// Auto-resize del textarea
+var textarea = document.getElementById('chatInput');
+textarea.addEventListener('input', function() {
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 400) + 'px';
+});
+</script>
+</body>
+</html>
