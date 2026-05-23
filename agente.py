@@ -206,6 +206,20 @@ tools = [
             "properties": {},
             "required": []
         }
+    },
+    {
+        "name": "registrar_ejercicio",
+        "description": "Registra una serie de un ejercicio en el gym. Úsala cuando el usuario diga algo como 'prebanca 60x10x1' o 'press hombro 40x12x2'.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "ejercicio": {"type": "string", "description": "Nombre del ejercicio"},
+                "peso": {"type": "number", "description": "Peso en kilos"},
+                "repeticiones": {"type": "integer", "description": "Número de repeticiones"},
+                "serie": {"type": "integer", "description": "Número de serie"}
+            },
+            "required": ["ejercicio", "peso", "repeticiones", "serie"]
+        }
     }
 ]
 
@@ -270,6 +284,31 @@ def leer_notas():
         return "No hay notas guardadas."
     return "\n".join([f"[{f}] {t}: {c}" for t, c, f in notas])
 
+
+# ─────────────────────────────────────────────
+# TOOL: REGISTRO DE EJERCICIOS
+# ─────────────────────────────────────────────
+
+def registrar_ejercicio(ejercicio, peso, repeticiones, serie):
+    conn = sqlite3.connect('agente.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS ejercicios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fecha TEXT,
+        hora TEXT,
+        ejercicio TEXT,
+        peso REAL,
+        repeticiones INTEGER,
+        serie INTEGER
+    )''')
+    fecha = datetime.now().strftime("%Y-%m-%d")
+    hora = datetime.now().strftime("%H:%M")
+    c.execute('INSERT INTO ejercicios (fecha, hora, ejercicio, peso, repeticiones, serie) VALUES (?, ?, ?, ?, ?, ?)',
+              (fecha, hora, ejercicio, peso, repeticiones, serie))
+    conn.commit()
+    conn.close()
+    return f"✅ {ejercicio} {peso}kg x{repeticiones} reps - Serie {serie} registrada"
+
 def ejecutar_herramienta(nombre, argumentos):
     if nombre == "calculadora":
         return calculadora(**argumentos)
@@ -281,6 +320,8 @@ def ejecutar_herramienta(nombre, argumentos):
         return guardar_nota(**argumentos)
     if nombre == "leer_notas":
         return leer_notas()
+    if nombre == "registrar_ejercicio":
+        return registrar_ejercicio(**argumentos)
     return f"Herramienta {nombre} no reconocida"
 
 def chat_con_agente(mensaje, historial):
@@ -367,6 +408,22 @@ def get_historial_chat():
     mensajes = [{"rol": fila[0], "contenido": fila[1]} for fila in c.fetchall()]
     conn.close()
     return jsonify(mensajes)
+
+
+@app.route('/api/ejercicios', methods=['GET'])
+def get_ejercicios():
+    conn = sqlite3.connect('agente.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS ejercicios (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        fecha TEXT, hora TEXT, ejercicio TEXT,
+        peso REAL, repeticiones INTEGER, serie INTEGER
+    )''')
+    fecha = datetime.now().strftime("%Y-%m-%d")
+    c.execute('SELECT ejercicio, peso, repeticiones, serie, hora FROM ejercicios WHERE fecha = ? ORDER BY id', (fecha,))
+    data = [{"ejercicio": r[0], "peso": r[1], "repeticiones": r[2], "serie": r[3], "hora": r[4]} for r in c.fetchall()]
+    conn.close()
+    return jsonify(data)
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
