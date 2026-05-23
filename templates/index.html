@@ -9,302 +9,333 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; height: 100vh; display: flex; flex-direction: column; }
 .header { background: #111; border-bottom: 1px solid #222; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
-.header h1 { font-size: 16px; font-weight: 600; color: #fff; }
+.header h1 { font-size: 16px; font-weight: 600; }
 .header p { font-size: 12px; color: #555; }
 .tabs { display: flex; background: #111; border-bottom: 1px solid #222; padding: 0 24px; gap: 4px; }
 .tab { padding: 12px 18px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #555; transition: all 0.2s; }
 .tab.active { color: #fff; border-bottom-color: #6366f1; }
 .tab:hover { color: #aaa; }
 .content { flex: 1; overflow: hidden; display: flex; }
-.panel { display: none; flex: 1; overflow-y: auto; padding: 24px; gap: 16px; }
-.panel.active { display: flex; flex-direction: column; }
-
-/* DASHBOARD */
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-.card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 20px; }
-.card-title { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
-.stat-big { font-size: 36px; font-weight: 700; color: #fff; }
-.stat-sub { font-size: 12px; color: #555; margin-top: 4px; }
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
-.badge-purple { background: #312e81; color: #a5b4fc; }
-.badge-green { background: #14532d; color: #86efac; }
-.badge-orange { background: #7c2d12; color: #fdba74; }
-.record-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
-.record-item:last-child { border-bottom: none; }
-.record-left { font-size: 13px; color: #ccc; }
-.record-time { font-size: 11px; color: #444; }
-
-/* CHAT */
-.chat-container { flex: 1; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; width: 100%; }
-.messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; min-height: 300px; }
-.message { display: flex; gap: 10px; align-items: flex-start; }
-.message.user { flex-direction: row-reverse; }
-.avatar { width: 30px; height: 30px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
-.message.user .avatar { background: #6366f1; color: #fff; }
-.bubble { background: #111; border: 1px solid #222; border-radius: 14px; padding: 10px 14px; font-size: 14px; line-height: 1.6; max-width: 80%; color: #ddd; }
-.message.user .bubble { background: #6366f1; color: #fff; border-color: #6366f1; }
-.chat-input { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-top: 1px solid #222; background: #111; width: 100%; }
-.chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
-.chat-input textarea { flex: 1; padding: 12px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; resize: none; min-height: 80px; color: #fff; font-family: inherit; }
+.panel { display: none; flex: 1; overflow-y: auto; padding: 20px; flex-direction: column; gap: 14px; }
+.panel.active { display: flex; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+.card { background: #111; border: 1px solid #222; border-radius: 14px; padding: 18px; }
+.card-title { font-size: 10px; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.stat-big { font-size: 32px; font-weight: 700; }
+.stat-sub { font-size: 11px; color: #555; margin-top: 4px; }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 500; background: #312e81; color: #a5b4fc; }
+.row { display: flex; justify-content: space-between; align-items: center; padding: 9px 0; border-bottom: 1px solid #1a1a1a; }
+.row:last-child { border-bottom: none; }
+.row-left { font-size: 12px; color: #ccc; }
+.row-time { font-size: 10px; color: #444; margin-top: 2px; }
+.chat-wrap { flex: 1; display: flex; flex-direction: column; max-width: 700px; margin: 0 auto; width: 100%; }
+.messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding-bottom: 14px; min-height: 200px; }
+.msg { display: flex; gap: 8px; align-items: flex-start; }
+.msg.user { flex-direction: row-reverse; }
+.av { width: 28px; height: 28px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.msg.user .av { background: #6366f1; }
+.bubble { background: #111; border: 1px solid #222; border-radius: 12px; padding: 9px 13px; font-size: 13px; line-height: 1.6; max-width: 80%; color: #ddd; }
+.msg.user .bubble { background: #6366f1; color: #fff; border-color: #6366f1; }
+.chat-input { padding: 14px; border-top: 1px solid #222; background: #111; }
+.chat-row { display: flex; gap: 8px; align-items: flex-end; }
+.chat-input textarea { flex: 1; padding: 10px 13px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; font-size: 13px; outline: none; resize: none; min-height: 70px; color: #fff; font-family: inherit; }
 .chat-input textarea:focus { border-color: #6366f1; }
-.btn-send { padding: 10px 20px; background: #6366f1; color: #fff; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; transition: opacity 0.2s; height: 42px; }
-.btn-send:hover { opacity: 0.8; }
-.btn-mic { width: 42px; height: 42px; border-radius: 50%; background: #1a1a1a; border: 1px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; }
-.btn-mic:hover { background: #222; }
+.btn { padding: 9px 18px; background: #6366f1; color: #fff; border: none; border-radius: 9px; font-size: 13px; cursor: pointer; height: 38px; }
+.btn:hover { opacity: 0.85; }
+.btn-mic { width: 38px; height: 38px; border-radius: 50%; background: #1a1a1a; border: 1px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
 .btn-mic.recording { background: #ef4444; border-color: #ef4444; animation: pulse 1s infinite; }
-@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-
-/* GYM */
-.exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
-.exercise-name { font-size: 14px; color: #fff; font-weight: 500; }
-.exercise-detail { font-size: 12px; color: #555; margin-top: 2px; }
-.exercise-weight { font-size: 18px; font-weight: 700; color: #6366f1; }
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
+.mic-status { font-size: 11px; color: #555; text-align: center; margin-top: 6px; }
+.ex-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+.ex-item:last-child { border-bottom: none; }
+.ex-name { font-size: 13px; font-weight: 500; }
+.ex-detail { font-size: 11px; color: #555; margin-top: 2px; }
+.ex-weight { font-size: 16px; font-weight: 700; color: #6366f1; }
+.pill { padding: 5px 12px; background: #1a1a1a; border: 1px solid #333; border-radius: 20px; color: #888; font-size: 11px; cursor: pointer; transition: all 0.2s; }
+.pill.active { border-color: #6366f1; color: #a5b4fc; background: #1e1b4b; }
+.pill:hover { border-color: #555; color: #ccc; }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <div>
-    <h1>⚡ Max</h1>
-    <p id="fecha-header">Cargando...</p>
-  </div>
-  <div id="registros-count" style="font-size:12px;color:#555;"></div>
+  <div><h1>⚡ Max</h1><p id="fecha-hdr"></p></div>
 </div>
 
 <div class="tabs">
-  <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
-  <div class="tab" onclick="showTab('chat')">Chat</div>
-  <div class="tab" onclick="showTab('gym')">Gym</div>
-  <div class="tab" onclick="showTab('registros')">Registros</div>
+  <div class="tab active" onclick="showTab('dashboard',this)">Dashboard</div>
+  <div class="tab" onclick="showTab('chat',this)">Chat</div>
+  <div class="tab" onclick="showTab('gym',this)">Gym</div>
+  <div class="tab" onclick="showTab('registros',this)">Registros</div>
+  <div class="tab" onclick="showTab('workout',this)">Workout</div>
 </div>
 
 <div class="content">
 
-  <!-- DASHBOARD -->
   <div class="panel active" id="tab-dashboard">
-    <div class="grid-3">
-      <div class="card">
-        <div class="card-title">Registros hoy</div>
-        <div class="stat-big" id="stat-registros">0</div>
-        <div class="stat-sub">actividades registradas</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Ejercicios hoy</div>
-        <div class="stat-big" id="stat-ejercicios">0</div>
-        <div class="stat-sub">series completadas</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Objetivo</div>
-        <div class="stat-big" style="color:#86efac">💪</div>
-        <div class="stat-sub">Masa muscular + definición</div>
-      </div>
+    <div class="grid3">
+      <div class="card"><div class="card-title">Registros hoy</div><div class="stat-big" id="s-reg">0</div><div class="stat-sub">actividades</div></div>
+      <div class="card"><div class="card-title">Ejercicios hoy</div><div class="stat-big" id="s-ej">0</div><div class="stat-sub">series</div></div>
+      <div class="card"><div class="card-title">Objetivo</div><div class="stat-big" style="color:#86efac">💪</div><div class="stat-sub">Masa + definición</div></div>
     </div>
-    <div class="grid-2">
-      <div class="card">
-        <div class="card-title">Actividad reciente</div>
-        <div id="actividad-reciente"></div>
-      </div>
-      <div class="card">
-        <div class="card-title">Distribución de registros</div>
-        <canvas id="chart-tipos" height="180"></canvas>
-      </div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Actividad reciente</div><div id="actividad"></div></div>
+      <div class="card"><div class="card-title">Distribución</div><canvas id="chart-tipos" height="160"></canvas></div>
     </div>
-    <div class="card">
-      <div class="card-title">Historial de ejercicios</div>
-      <canvas id="chart-gym" height="120"></canvas>
-    </div>
+    <div class="card"><div class="card-title">Ejercicios de hoy</div><canvas id="chart-gym-dash" height="100"></canvas></div>
   </div>
 
-  <!-- CHAT -->
   <div class="panel" id="tab-chat">
-    <div class="chat-container">
+    <div class="chat-wrap">
       <div class="messages" id="messages"></div>
       <div class="chat-input">
-        <div class="chat-input-row">
-          <textarea id="input" placeholder="Habla con Max..." rows="2"></textarea>
+        <div class="chat-row">
+          <textarea id="input" placeholder="Habla con Max..."></textarea>
           <button class="btn-mic" id="btn-mic" onclick="toggleMic()">🎤</button>
-          <button class="btn-send" onclick="sendMessage()">Enviar</button>
+          <button class="btn" onclick="sendMessage()">Enviar</button>
         </div>
         <div class="mic-status" id="mic-status"></div>
       </div>
     </div>
   </div>
 
-  <!-- GYM -->
   <div class="panel" id="tab-gym">
-    <div class="card">
-      <div class="card-title">Series registradas hoy</div>
-      <div id="gym-list"></div>
+    <div class="grid2">
+      <div class="card"><div class="card-title">Series de hoy</div><div id="gym-list"></div></div>
+      <div class="card"><div class="card-title">Pesos de hoy</div><canvas id="chart-gym" height="200"></canvas></div>
     </div>
     <div class="card">
-      <div class="card-title">Progreso por ejercicio</div>
-      <canvas id="chart-progreso" height="150"></canvas>
+      <div class="card-title">Mi rutina</div>
+      <div id="rutina-grid"></div>
     </div>
   </div>
 
-  <!-- REGISTROS -->
   <div class="panel" id="tab-registros">
-    <div class="card">
-      <div class="card-title">Todos los registros de hoy</div>
-      <div id="registros-list"></div>
+    <div class="card"><div class="card-title">Registros de hoy</div><div id="reg-list"></div></div>
+  </div>
+
+  <div class="panel" id="tab-workout">
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="card-title">Día 1 — Piernas + Pecho</div>
+          <div id="pills-dia1" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Día 2 — Espalda + Tríceps</div>
+          <div id="pills-dia2" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Día 3 — Pecho + Hombros</div>
+          <div id="pills-dia3" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+        </div>
+        <div class="card">
+          <div class="card-title">Día 4 — Pecho + Espalda + Bíceps</div>
+          <div id="pills-dia4" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px"></div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="card">
+          <div class="card-title">Evolución — <span id="ej-actual" style="color:#a5b4fc">elige un ejercicio</span></div>
+          <canvas id="chart-progreso" height="160"></canvas>
+        </div>
+        <div class="grid3" id="stats-progreso"></div>
+      </div>
     </div>
   </div>
 
 </div>
 
 <script>
-let historial = [];
-let chartTipos, chartGym, chartProgreso;
-
-// ─── TABS ───
-function showTab(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  event.target.classList.add('active');
-  if (name === 'dashboard') loadDashboard();
-  if (name === 'gym') loadGym();
-  if (name === 'registros') loadRegistros();
-}
-
-// ─── FECHA ───
+// ── FECHA ──
 const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
 const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const hoy = new Date();
-document.getElementById('fecha-header').textContent = `${dias[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+document.getElementById('fecha-hdr').textContent = `${dias[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]}`;
 
-// ─── DASHBOARD ───
+// ── TABS ──
+function showTab(name, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'gym') { loadGym(); renderRutina(); }
+  if (name === 'registros') loadRegistros();
+  if (name === 'workout') loadProgreso();
+}
+
+// ── RUTINA ──
+const RUTINA = {
+  "Día 1 — Piernas + Pecho": ["Barbell squat","Romanian deadlift","Lying leg curl","Leg extension","Press inclinado","Press plano"],
+  "Día 2 — Espalda + Tríceps": ["Lat pulldown","Seated cable row","Dumbbell row","Face pull","Pullover","Skull crushers","Overhead rope extension","Rope triceps pushdown"],
+  "Día 3 — Pecho + Hombros": ["Incline bench press","Bench press","Converging chest press","Pec fly machine","Shoulder press","Dumbbell lateral raises","Front raise dumbbell"],
+  "Día 4 — Pecho + Espalda + Bíceps": ["Incline bench press","Bench press","Lat pulldown","Seated cable row","Bicep martillo","Bicep sentado","Biceps curl"]
+};
+const COLORES = ['#6366f1','#10b981','#f59e0b','#ef4444'];
+
+function renderRutina() {
+  const div = document.getElementById('rutina-grid');
+  let html = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">';
+  Object.entries(RUTINA).forEach(([dia, ejercicios], i) => {
+    html += `<div style="background:#0d0d0d;border-radius:10px;padding:14px">
+      <div style="font-size:10px;color:${COLORES[i]};font-weight:600;margin-bottom:8px;text-transform:uppercase">${dia}</div>
+      ${ejercicios.map(e => `<div style="font-size:11px;color:#666;padding:3px 0;border-bottom:1px solid #1a1a1a">${e}</div>`).join('')}
+    </div>`;
+  });
+  html += '</div>';
+  div.innerHTML = html;
+}
+
+// ── DASHBOARD ──
+let chartTipos, chartGymDash;
 async function loadDashboard() {
-  const res = await fetch('/api/registros');
-  const data = await res.json();
-  document.getElementById('stat-registros').textContent = data.length;
-
-  const gymRes = await fetch('/api/ejercicios');
-  const gymData = await gymRes.json();
-  document.getElementById('stat-ejercicios').textContent = gymData.length;
-
-  // Actividad reciente
-  const tipos = {comida: '🍽️', ejercicio: '💪', tarea: '✅'};
-  const html = data.slice(-4).reverse().map(r => `
-    <div class="record-item">
-      <div>
-        <div class="record-left">${tipos[r.tipo] || '📝'} ${r.contenido.substring(0, 50)}${r.contenido.length > 50 ? '...' : ''}</div>
-        <div class="record-time">${r.hora}</div>
-      </div>
-      <span class="badge badge-purple">${r.tipo}</span>
-    </div>
-  `).join('');
-  document.getElementById('actividad-reciente').innerHTML = html || '<div style="color:#444;font-size:13px">Sin registros hoy</div>';
-
-  // Chart tipos
-  const conteo = {comida: 0, ejercicio: 0, tarea: 0};
-  data.forEach(r => { if (conteo[r.tipo] !== undefined) conteo[r.tipo]++; });
+  const [regRes, ejRes] = await Promise.all([fetch('/api/registros'), fetch('/api/ejercicios')]);
+  const regs = await regRes.json();
+  const ejs = await ejRes.json();
+  document.getElementById('s-reg').textContent = regs.length;
+  document.getElementById('s-ej').textContent = ejs.length;
+  const tipos = {comida:'🍽️', ejercicio:'💪', tarea:'✅'};
+  document.getElementById('actividad').innerHTML = regs.slice(-4).reverse().map(r =>
+    `<div class="row"><div><div class="row-left">${tipos[r.tipo]||'📝'} ${r.contenido.substring(0,45)}${r.contenido.length>45?'...':''}</div><div class="row-time">${r.hora}</div></div><span class="badge">${r.tipo}</span></div>`
+  ).join('') || '<div style="color:#444;font-size:12px">Sin registros hoy</div>';
+  const conteo = {comida:0, ejercicio:0, tarea:0};
+  regs.forEach(r => { if(conteo[r.tipo]!==undefined) conteo[r.tipo]++; });
   if (chartTipos) chartTipos.destroy();
   chartTipos = new Chart(document.getElementById('chart-tipos'), {
     type: 'doughnut',
-    data: {
-      labels: ['Comida', 'Ejercicio', 'Tarea'],
-      datasets: [{ data: Object.values(conteo), backgroundColor: ['#f59e0b', '#6366f1', '#10b981'], borderWidth: 0 }]
-    },
-    options: { plugins: { legend: { labels: { color: '#666', font: { size: 11 } } } } }
+    data: { labels: ['Comida','Ejercicio','Tarea'], datasets: [{ data: Object.values(conteo), backgroundColor: ['#f59e0b','#6366f1','#10b981'], borderWidth: 0 }] },
+    options: { plugins: { legend: { labels: { color: '#555', font: { size: 10 } } } } }
   });
-
-  // Chart gym
-  if (gymData.length > 0) {
-    if (chartGym) chartGym.destroy();
-    chartGym = new Chart(document.getElementById('chart-gym'), {
+  if (ejs.length > 0) {
+    if (chartGymDash) chartGymDash.destroy();
+    chartGymDash = new Chart(document.getElementById('chart-gym-dash'), {
       type: 'bar',
-      data: {
-        labels: gymData.map(e => `${e.ejercicio} S${e.serie}`),
-        datasets: [{ label: 'Peso (kg)', data: gymData.map(e => e.peso), backgroundColor: '#6366f1', borderRadius: 6 }]
-      },
-      options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555' } }, y: { ticks: { color: '#555' } } } }
+      data: { labels: ejs.map(e => `${e.ejercicio} S${e.serie}`), datasets: [{ data: ejs.map(e => e.peso), backgroundColor: '#6366f1', borderRadius: 5 }] },
+      options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555', font: { size: 9 } } }, y: { ticks: { color: '#555' } } } }
     });
   }
 }
 
-// ─── GYM ───
+// ── GYM ──
+let chartGym;
 async function loadGym() {
   const res = await fetch('/api/ejercicios');
   const data = await res.json();
   const list = document.getElementById('gym-list');
-  if (data.length === 0) { list.innerHTML = '<div style="color:#444;font-size:13px">Sin ejercicios registrados hoy</div>'; return; }
-  list.innerHTML = data.map(e => `
-    <div class="exercise-item">
-      <div>
-        <div class="exercise-name">${e.ejercicio}</div>
-        <div class="exercise-detail">Serie ${e.serie} · ${e.hora}</div>
-      </div>
-      <div class="exercise-weight">${e.peso}kg × ${e.repeticiones}</div>
-    </div>
-  `).join('');
-
-  if (chartProgreso) chartProgreso.destroy();
-  chartProgreso = new Chart(document.getElementById('chart-progreso'), {
-    type: 'bar',
-    data: {
-      labels: data.map(e => `${e.ejercicio} S${e.serie}`),
-      datasets: [{ label: 'kg', data: data.map(e => e.peso), backgroundColor: '#6366f1', borderRadius: 6 }]
-    },
-    options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555', font: { size: 10 } } }, y: { ticks: { color: '#555' } } } }
-  });
+  list.innerHTML = data.length ? data.map(e =>
+    `<div class="ex-item"><div><div class="ex-name">${e.ejercicio}</div><div class="ex-detail">Serie ${e.serie} · ${e.hora}</div></div><div class="ex-weight">${e.peso}kg×${e.repeticiones}</div></div>`
+  ).join('') : '<div style="color:#444;font-size:12px">Sin ejercicios hoy</div>';
+  if (data.length > 0) {
+    if (chartGym) chartGym.destroy();
+    chartGym = new Chart(document.getElementById('chart-gym'), {
+      type: 'bar',
+      data: { labels: data.map(e => `${e.ejercicio} S${e.serie}`), datasets: [{ data: data.map(e => e.peso), backgroundColor: '#6366f1', borderRadius: 5 }] },
+      options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555', font: { size: 9 } } }, y: { ticks: { color: '#555' } } } }
+    });
+  }
 }
 
-// ─── REGISTROS ───
+// ── REGISTROS ──
 async function loadRegistros() {
   const res = await fetch('/api/registros');
   const data = await res.json();
-  const tipos = {comida: '🍽️', ejercicio: '💪', tarea: '✅'};
-  document.getElementById('registros-list').innerHTML = data.reverse().map(r => `
-    <div class="record-item">
-      <div>
-        <div class="record-left">${tipos[r.tipo] || '📝'} ${r.contenido}</div>
-        <div class="record-time">${r.hora}</div>
-      </div>
-      <span class="badge badge-purple">${r.tipo}</span>
-    </div>
-  `).join('') || '<div style="color:#444;font-size:13px">Sin registros hoy</div>';
+  const tipos = {comida:'🍽️', ejercicio:'💪', tarea:'✅'};
+  document.getElementById('reg-list').innerHTML = data.reverse().map(r =>
+    `<div class="row"><div><div class="row-left">${tipos[r.tipo]||'📝'} ${r.contenido}</div><div class="row-time">${r.hora}</div></div><span class="badge">${r.tipo}</span></div>`
+  ).join('') || '<div style="color:#444;font-size:12px">Sin registros hoy</div>';
 }
 
-// ─── CHAT ───
+// ── PROGRESO ──
+let progresoData = {};
+let chartProgreso;
+const DIAS_EJERCICIOS = {
+  'pills-dia1': ['Barbell squat','Romanian deadlift','Lying leg curl','leg extension','Hip thrust','Bulgarian split squat','Abducción máquina','Peso muerto rumano con mancuernas'],
+  'pills-dia2': ['Lat pulldown','Seated cable row','Dumbbell row','Face pull','Pullover','Skull crushers','Rope triceps pushdown','Bar triceps pushdown'],
+  'pills-dia3': ['Incline bench press','Bench press','Converging chest press','Pec fly machine','Dumbbell lateral raises','Cable rope front raisei','mancuernas'],
+  'pills-dia4': ['Incline bench press','Bench press','Lat pulldown','Seated cable row','Barbell biceps curl','Cable rope biceps curl']
+};
+
+async function loadProgreso() {
+  const res = await fetch('/api/progreso');
+  progresoData = await res.json();
+  const ejerciciosDisponibles = Object.keys(progresoData);
+  
+  Object.entries(DIAS_EJERCICIOS).forEach(([divId, ejercicios]) => {
+    const div = document.getElementById(divId);
+    if (!div) return;
+    div.innerHTML = ejercicios
+      .filter(e => ejerciciosDisponibles.some(k => k.toLowerCase().includes(e.toLowerCase()) || e.toLowerCase().includes(k.toLowerCase())))
+      .map(e => {
+        const key = ejerciciosDisponibles.find(k => k.toLowerCase().includes(e.toLowerCase()) || e.toLowerCase().includes(k.toLowerCase())) || e;
+        return `<span class="pill" onclick="mostrarProgreso('${key}',this)">${e}</span>`;
+      }).join('');
+  });
+}
+
+function mostrarProgreso(ejercicio, el) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+  if (el) el.classList.add('active');
+  document.getElementById('ej-actual').textContent = ejercicio;
+  const data = progresoData[ejercicio];
+  const semanas = data.map(d => d.semana);
+  const pesos = data.map(d => d.peso);
+  if (chartProgreso) chartProgreso.destroy();
+  chartProgreso = new Chart(document.getElementById('chart-progreso'), {
+    type: 'line',
+    data: {
+      labels: semanas,
+      datasets: [{ label: 'kg', data: pesos, borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', tension: 0.4, fill: true, pointBackgroundColor: '#6366f1', pointRadius: 4 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555', font: { size: 10 } } }, y: { ticks: { color: '#555' }, title: { display: true, text: 'kg', color: '#555' } } } }
+  });
+  const min = Math.min(...pesos), max = Math.max(...pesos), mejora = max - min;
+  const pct = min > 0 ? Math.round((mejora/min)*100) : 0;
+  document.getElementById('stats-progreso').innerHTML = `
+    <div class="card"><div class="card-title">Peso inicial</div><div class="stat-big">${min}kg</div></div>
+    <div class="card"><div class="card-title">Peso máximo</div><div class="stat-big" style="color:#6366f1">${max}kg</div></div>
+    <div class="card"><div class="card-title">Mejora total</div><div class="stat-big" style="color:#10b981">+${mejora}kg</div><div class="stat-sub">+${pct}% progreso</div></div>
+  `;
+}
+
+// ── CHAT ──
+let historial = [];
 function addMessage(role, text) {
   const div = document.createElement('div');
-  div.className = `message ${role}`;
-  div.innerHTML = `<div class="avatar">${role === 'user' ? 'Tú' : 'M'}</div><div class="bubble">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="av">${role==='user'?'Tú':'M'}</div><div class="bubble">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
   document.getElementById('messages').appendChild(div);
   document.getElementById('messages').scrollTop = 999999;
 }
-
 async function sendMessage() {
   const input = document.getElementById('input');
   const msg = input.value.trim();
   if (!msg) return;
   input.value = '';
   addMessage('user', msg);
-  historial.push({role: 'user', content: msg});
-  const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({mensaje: msg, historial}) });
+  historial.push({role:'user', content:msg});
+  const res = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({mensaje:msg, historial}) });
   const data = await res.json();
   addMessage('assistant', data.respuesta);
-  historial.push({role: 'assistant', content: data.respuesta});
+  historial.push({role:'assistant', content:data.respuesta});
   loadDashboard();
 }
+document.getElementById('input').addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();} });
 
-document.getElementById('input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-
-// ─── MIC ───
-let mediaRecorder, audioChunks = [], isRecording = false;
+// ── MIC ──
+let mediaRecorder, audioChunks=[], isRecording=false;
 async function toggleMic() {
   const btn = document.getElementById('btn-mic');
   const status = document.getElementById('mic-status');
   if (!isRecording) {
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await navigator.mediaDevices.getUserMedia({audio:true});
     mediaRecorder = new MediaRecorder(stream);
     audioChunks = [];
     mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
     mediaRecorder.onstop = async () => {
-      const blob = new Blob(audioChunks, {type: 'audio/webm'});
-      const res = await fetch('/api/audio', {method:'POST', body: blob});
+      const blob = new Blob(audioChunks, {type:'audio/webm'});
+      const res = await fetch('/api/audio', {method:'POST', body:blob});
       const data = await res.json();
       if (data.texto) { document.getElementById('input').value = data.texto; sendMessage(); }
       status.textContent = '';
@@ -321,7 +352,7 @@ async function toggleMic() {
   }
 }
 
-// ─── INIT ───
+// ── INIT ──
 loadDashboard();
 </script>
 </body>

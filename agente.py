@@ -410,6 +410,24 @@ def get_historial_chat():
     return jsonify(mensajes)
 
 
+
+@app.route('/api/progreso', methods=['GET'])
+def get_progreso():
+    conn = sqlite3.connect('agente.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS progreso_historico (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        ejercicio TEXT, semana TEXT, peso_max REAL
+    )''')
+    c.execute('SELECT DISTINCT ejercicio FROM progreso_historico ORDER BY ejercicio')
+    ejercicios = [r[0] for r in c.fetchall()]
+    data = {}
+    for ej in ejercicios:
+        c.execute('SELECT semana, peso_max FROM progreso_historico WHERE ejercicio = ? ORDER BY id', (ej,))
+        data[ej] = [{"semana": r[0], "peso": r[1]} for r in c.fetchall()]
+    conn.close()
+    return jsonify(data)
+
 @app.route('/api/ejercicios', methods=['GET'])
 def get_ejercicios():
     conn = sqlite3.connect('agente.db')
