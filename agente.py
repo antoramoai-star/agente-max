@@ -176,6 +176,15 @@ tools = [
             },
             "required": ["ruta"]
         }
+    },
+    {
+        "name": "obtener_fecha_hora",
+        "description": "Retorna la fecha y hora actual. Úsala cuando el usuario pregunte qué día es, qué hora es, o necesite un timestamp.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
     }
 ]
 
@@ -195,11 +204,27 @@ def leer_archivo(ruta):
     except Exception as e:
         return f"Error al leer: {str(e)}"
 
+
+# ─────────────────────────────────────────────
+# TOOL: FECHA Y HORA
+# ─────────────────────────────────────────────
+
+def obtener_fecha_hora():
+    ahora = datetime.now()
+    return {
+        "fecha": ahora.strftime("%Y-%m-%d"),
+        "hora": ahora.strftime("%H:%M:%S"),
+        "dia_semana": ahora.strftime("%A"),
+        "formato_legible": ahora.strftime("%d de %B de %Y, %H:%M")
+    }
+
 def ejecutar_herramienta(nombre, argumentos):
     if nombre == "calculadora":
         return calculadora(**argumentos)
     if nombre == "leer_archivo":
         return leer_archivo(**argumentos)
+    if nombre == "obtener_fecha_hora":
+        return obtener_fecha_hora()
     return f"Herramienta {nombre} no reconocida"
 
 def chat_con_agente(mensaje, historial):
@@ -407,3 +432,4 @@ if __name__ == "__main__":
         print("Escribe 'v' para hablar por voz\n")
         threading.Thread(target=lambda: app.run(debug=False, port=8888, host="0.0.0.0", use_reloader=False), daemon=True).start()
         modo_terminal(usar_voz=True)
+
