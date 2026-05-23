@@ -313,7 +313,10 @@ def chat_con_agente(mensaje, historial):
                     })
             messages.append({"role": "user", "content": tool_results})
         else:
-            return response.content[0].text
+            for block in response.content:
+                if hasattr(block, "text"):
+                    return block.text
+            return "Listo."
 
 # ─────────────────────────────────────────────
 # RUTAS FLASK
