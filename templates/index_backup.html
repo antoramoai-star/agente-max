@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Max - Tu Agente Personal</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0a0a0a; color: #fff; height: 100vh; display: flex; flex-direction: column; }
+.header { background: #111; border-bottom: 1px solid #222; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+.header h1 { font-size: 16px; font-weight: 600; color: #fff; }
+.header p { font-size: 12px; color: #555; }
+.tabs { display: flex; background: #111; border-bottom: 1px solid #222; padding: 0 24px; gap: 4px; }
+.tab { padding: 12px 18px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #555; transition: all 0.2s; }
+.tab.active { color: #fff; border-bottom-color: #6366f1; }
+.tab:hover { color: #aaa; }
+.content { flex: 1; overflow: hidden; display: flex; }
+.panel { display: none; flex: 1; overflow-y: auto; padding: 24px; gap: 16px; }
+.panel.active { display: flex; flex-direction: column; }
+
+/* DASHBOARD */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+.card { background: #111; border: 1px solid #222; border-radius: 16px; padding: 20px; }
+.card-title { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.stat-big { font-size: 36px; font-weight: 700; color: #fff; }
+.stat-sub { font-size: 12px; color: #555; margin-top: 4px; }
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; }
+.badge-purple { background: #312e81; color: #a5b4fc; }
+.badge-green { background: #14532d; color: #86efac; }
+.badge-orange { background: #7c2d12; color: #fdba74; }
+.record-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #1a1a1a; }
+.record-item:last-child { border-bottom: none; }
+.record-left { font-size: 13px; color: #ccc; }
+.record-time { font-size: 11px; color: #444; }
+
+/* CHAT */
+.chat-container { flex: 1; display: flex; flex-direction: column; max-width: 720px; margin: 0 auto; width: 100%; }
+.messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-bottom: 16px; min-height: 300px; }
+.message { display: flex; gap: 10px; align-items: flex-start; }
+.message.user { flex-direction: row-reverse; }
+.avatar { width: 30px; height: 30px; border-radius: 50%; background: #222; display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0; }
+.message.user .avatar { background: #6366f1; color: #fff; }
+.bubble { background: #111; border: 1px solid #222; border-radius: 14px; padding: 10px 14px; font-size: 14px; line-height: 1.6; max-width: 80%; color: #ddd; }
+.message.user .bubble { background: #6366f1; color: #fff; border-color: #6366f1; }
+.chat-input { display: flex; flex-direction: column; gap: 8px; padding: 16px; border-top: 1px solid #222; background: #111; width: 100%; }
+.chat-input-row { display: flex; gap: 8px; align-items: flex-end; }
+.chat-input textarea { flex: 1; padding: 12px 14px; background: #1a1a1a; border: 1px solid #333; border-radius: 12px; font-size: 14px; outline: none; resize: none; min-height: 80px; color: #fff; font-family: inherit; }
+.chat-input textarea:focus { border-color: #6366f1; }
+.btn-send { padding: 10px 20px; background: #6366f1; color: #fff; border: none; border-radius: 10px; font-size: 14px; cursor: pointer; transition: opacity 0.2s; height: 42px; }
+.btn-send:hover { opacity: 0.8; }
+.btn-mic { width: 42px; height: 42px; border-radius: 50%; background: #1a1a1a; border: 1px solid #333; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: all 0.2s; }
+.btn-mic:hover { background: #222; }
+.btn-mic.recording { background: #ef4444; border-color: #ef4444; animation: pulse 1s infinite; }
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+/* GYM */
+.exercise-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #1a1a1a; }
+.exercise-name { font-size: 14px; color: #fff; font-weight: 500; }
+.exercise-detail { font-size: 12px; color: #555; margin-top: 2px; }
+.exercise-weight { font-size: 18px; font-weight: 700; color: #6366f1; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>⚡ Max</h1>
+    <p id="fecha-header">Cargando...</p>
+  </div>
+  <div id="registros-count" style="font-size:12px;color:#555;"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('dashboard')">Dashboard</div>
+  <div class="tab" onclick="showTab('chat')">Chat</div>
+  <div class="tab" onclick="showTab('gym')">Gym</div>
+  <div class="tab" onclick="showTab('registros')">Registros</div>
+  <div class="tab" onclick="showTab('progreso')">Progreso</div>
+</div>
+
+<div class="content">
+
+  <!-- DASHBOARD -->
+  <div class="panel active" id="tab-dashboard">
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-title">Registros hoy</div>
+        <div class="stat-big" id="stat-registros">0</div>
+        <div class="stat-sub">actividades registradas</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Ejercicios hoy</div>
+        <div class="stat-big" id="stat-ejercicios">0</div>
+        <div class="stat-sub">series completadas</div>
+      </div>
+      <div class="card">
+        <div class="card-title">Objetivo</div>
+        <div class="stat-big" style="color:#86efac">💪</div>
+        <div class="stat-sub">Masa muscular + definición</div>
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Actividad reciente</div>
+        <div id="actividad-reciente"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Distribución de registros</div>
+        <canvas id="chart-tipos" height="180"></canvas>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Historial de ejercicios</div>
+      <canvas id="chart-gym" height="120"></canvas>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div class="panel" id="tab-chat">
+    <div class="chat-container">
+      <div class="messages" id="messages"></div>
+      <div class="chat-input">
+        <div class="chat-input-row">
+          <textarea id="input" placeholder="Habla con Max..." rows="2"></textarea>
+          <button class="btn-mic" id="btn-mic" onclick="toggleMic()">🎤</button>
+          <button class="btn-send" onclick="sendMessage()">Enviar</button>
+        </div>
+        <div class="mic-status" id="mic-status"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GYM -->
+  <div class="panel" id="tab-gym">
+    <div class="card">
+      <div class="card-title">Series registradas hoy</div>
+      <div id="gym-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Progreso por ejercicio</div>
+      <canvas id="chart-progreso" height="150"></canvas>
+    </div>
+  </div>
+
+  <!-- REGISTROS -->
+  <div class="panel" id="tab-registros">
+    <div class="card">
+      <div class="card-title">Todos los registros de hoy</div>
+      <div id="registros-list"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let historial = [];
+let chartTipos, chartGym, chartProgreso;
+
+// ─── TABS ───
+function showTab(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.target.classList.add('active');
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'gym') loadGym();
+  if (name === 'registros') loadRegistros();
+  if (name === 'progreso') loadProgreso();
+}
+
+// ─── FECHA ───
+const dias = ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'];
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const hoy = new Date();
+document.getElementById('fecha-header').textContent = `${dias[hoy.getDay()]}, ${hoy.getDate()} de ${meses[hoy.getMonth()]} de ${hoy.getFullYear()}`;
+
+// ─── DASHBOARD ───
+async function loadDashboard() {
+  const res = await fetch('/api/registros');
+  const data = await res.json();
+  document.getElementById('stat-registros').textContent = data.length;
+
+  const gymRes = await fetch('/api/ejercicios');
+  const gymData = await gymRes.json();
+  document.getElementById('stat-ejercicios').textContent = gymData.length;
+
+  // Actividad reciente
+  const tipos = {comida: '🍽️', ejercicio: '💪', tarea: '✅'};
+  const html = data.slice(-4).reverse().map(r => `
+    <div class="record-item">
+      <div>
+        <div class="record-left">${tipos[r.tipo] || '📝'} ${r.contenido.substring(0, 50)}${r.contenido.length > 50 ? '...' : ''}</div>
+        <div class="record-time">${r.hora}</div>
+      </div>
+      <span class="badge badge-purple">${r.tipo}</span>
+    </div>
+  `).join('');
+  document.getElementById('actividad-reciente').innerHTML = html || '<div style="color:#444;font-size:13px">Sin registros hoy</div>';
+
+  // Chart tipos
+  const conteo = {comida: 0, ejercicio: 0, tarea: 0};
+  data.forEach(r => { if (conteo[r.tipo] !== undefined) conteo[r.tipo]++; });
+  if (chartTipos) chartTipos.destroy();
+  chartTipos = new Chart(document.getElementById('chart-tipos'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Comida', 'Ejercicio', 'Tarea'],
+      datasets: [{ data: Object.values(conteo), backgroundColor: ['#f59e0b', '#6366f1', '#10b981'], borderWidth: 0 }]
+    },
+    options: { plugins: { legend: { labels: { color: '#666', font: { size: 11 } } } } }
+  });
+
+  // Chart gym
+  if (gymData.length > 0) {
+    if (chartGym) chartGym.destroy();
+    chartGym = new Chart(document.getElementById('chart-gym'), {
+      type: 'bar',
+      data: {
+        labels: gymData.map(e => `${e.ejercicio} S${e.serie}`),
+        datasets: [{ label: 'Peso (kg)', data: gymData.map(e => e.peso), backgroundColor: '#6366f1', borderRadius: 6 }]
+      },
+      options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555' } }, y: { ticks: { color: '#555' } } } }
+    });
+  }
+}
+
+// ─── GYM ───
+async function loadGym() {
+  const res = await fetch('/api/ejercicios');
+  const data = await res.json();
+  const list = document.getElementById('gym-list');
+  if (data.length === 0) { list.innerHTML = '<div style="color:#444;font-size:13px">Sin ejercicios registrados hoy</div>'; return; }
+  list.innerHTML = data.map(e => `
+    <div class="exercise-item">
+      <div>
+        <div class="exercise-name">${e.ejercicio}</div>
+        <div class="exercise-detail">Serie ${e.serie} · ${e.hora}</div>
+      </div>
+      <div class="exercise-weight">${e.peso}kg × ${e.repeticiones}</div>
+    </div>
+  `).join('');
+
+  if (chartProgreso) chartProgreso.destroy();
+  chartProgreso = new Chart(document.getElementById('chart-progreso'), {
+    type: 'bar',
+    data: {
+      labels: data.map(e => `${e.ejercicio} S${e.serie}`),
+      datasets: [{ label: 'kg', data: data.map(e => e.peso), backgroundColor: '#6366f1', borderRadius: 6 }]
+    },
+    options: { plugins: { legend: { display: false } }, scales: { x: { ticks: { color: '#555', font: { size: 10 } } }, y: { ticks: { color: '#555' } } } }
+  });
+}
+
+// ─── REGISTROS ───
+async function loadRegistros() {
+  const res = await fetch('/api/registros');
+  const data = await res.json();
+  const tipos = {comida: '🍽️', ejercicio: '💪', tarea: '✅'};
+  document.getElementById('registros-list').innerHTML = data.reverse().map(r => `
+    <div class="record-item">
+      <div>
+        <div class="record-left">${tipos[r.tipo] || '📝'} ${r.contenido}</div>
+        <div class="record-time">${r.hora}</div>
+      </div>
+      <span class="badge badge-purple">${r.tipo}</span>
+    </div>
+  `).join('') || '<div style="color:#444;font-size:13px">Sin registros hoy</div>';
+}
+
+// ─── CHAT ───
+function addMessage(role, text) {
+  const div = document.createElement('div');
+  div.className = `message ${role}`;
+  div.innerHTML = `<div class="avatar">${role === 'user' ? 'Tú' : 'M'}</div><div class="bubble">${text.replace(/\n/g,'<br>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')}</div>`;
+  document.getElementById('messages').appendChild(div);
+  document.getElementById('messages').scrollTop = 999999;
+}
+
+async function sendMessage() {
+  const input = document.getElementById('input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  input.value = '';
+  addMessage('user', msg);
+  historial.push({role: 'user', content: msg});
+  const res = await fetch('/api/chat', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({mensaje: msg, historial}) });
+  const data = await res.json();
+  addMessage('assistant', data.respuesta);
+  historial.push({role: 'assistant', content: data.respuesta});
+  loadDashboard();
+}
+
+document.getElementById('input').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+
+// ─── MIC ───
+let mediaRecorder, audioChunks = [], isRecording = false;
+async function toggleMic() {
+  const btn = document.getElementById('btn-mic');
+  const status = document.getElementById('mic-status');
+  if (!isRecording) {
+    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    mediaRecorder = new MediaRecorder(stream);
+    audioChunks = [];
+    mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+    mediaRecorder.onstop = async () => {
+      const blob = new Blob(audioChunks, {type: 'audio/webm'});
+      const res = await fetch('/api/audio', {method:'POST', body: blob});
+      const data = await res.json();
+      if (data.texto) { document.getElementById('input').value = data.texto; sendMessage(); }
+      status.textContent = '';
+    };
+    mediaRecorder.start();
+    isRecording = true;
+    btn.classList.add('recording');
+    status.textContent = '🔴 Grabando...';
+  } else {
+    mediaRecorder.stop();
+    isRecording = false;
+    btn.classList.remove('recording');
+    status.textContent = 'Procesando...';
+  }
+}
+
+
+// ─── PROGRESO ───
+let progresoData = {};
+let chartProgresoHistorico;
+
+async function loadProgreso() {
+  const res = await fetch('/api/progreso');
+  progresoData = await res.json();
+  const selector = document.getElementById('ejercicio-selector');
+  selector.innerHTML = Object.keys(progresoData).map(e => 
+    `<button onclick="mostrarProgreso('${e}')" style="padding:6px 14px;background:#1a1a1a;border:1px solid #333;border-radius:20px;color:#888;font-size:12px;cursor:pointer">${e}</button>`
+  ).join('');
+}
+
+function mostrarProgreso(ejercicio) {
+  document.getElementById('ejercicio-actual').textContent = ejercicio;
+  const data = progresoData[ejercicio];
+  const semanas = data.map(d => d.semana);
+  const pesos = data.map(d => d.peso);
+
+  if (chartProgresoHistorico) chartProgresoHistorico.destroy();
+  chartProgresoHistorico = new Chart(document.getElementById('chart-progreso-historico'), {
+    type: 'line',
+    data: {
+      labels: semanas,
+      datasets: [{
+        label: 'Peso máximo (kg)',
+        data: pesos,
+        borderColor: '#6366f1',
+        backgroundColor: 'rgba(99,102,241,0.1)',
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#6366f1',
+        pointRadius: 5
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#555', font: { size: 10 } } },
+        y: { ticks: { color: '#555' }, title: { display: true, text: 'kg', color: '#555' } }
+      }
+    }
+  });
+
+  const pesoMin = Math.min(...pesos);
+  const pesoMax = Math.max(...pesos);
+  const mejora = pesoMax - pesoMin;
+  const pct = Math.round((mejora / pesoMin) * 100);
+
+  document.getElementById('stats-progreso').innerHTML = `
+    <div class="card"><div class="card-title">Peso inicial</div><div class="stat-big">${pesoMin}kg</div></div>
+    <div class="card"><div class="card-title">Peso máximo</div><div class="stat-big" style="color:#6366f1">${pesoMax}kg</div></div>
+    <div class="card"><div class="card-title">Mejora total</div><div class="stat-big" style="color:#10b981">+${mejora}kg</div><div class="stat-sub">+${pct}% de progreso</div></div>
+  `;
+
+  // Resaltar boton activo
+  document.querySelectorAll('#ejercicio-selector button').forEach(b => {
+    b.style.borderColor = b.textContent === ejercicio ? '#6366f1' : '#333';
+    b.style.color = b.textContent === ejercicio ? '#a5b4fc' : '#888';
+  });
+}
+
+// ─── INIT ───
+loadDashboard();
+</script>
+</body>
+</html>

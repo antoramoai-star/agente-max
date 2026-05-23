@@ -363,6 +363,11 @@ def chat_con_agente(mensaje, historial):
 # RUTAS FLASK
 # ─────────────────────────────────────────────
 
+
+@app.route('/workout')
+def workout():
+    return render_template('workout.html')
+
 @app.route('/')
 def index():
     return render_template('index.html')
