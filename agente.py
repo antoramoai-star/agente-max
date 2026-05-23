@@ -185,6 +185,27 @@ tools = [
             "properties": {},
             "required": []
         }
+    },
+    {
+        "name": "guardar_nota",
+        "description": "Guarda una nota o recordatorio importante para el usuario.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "titulo": {"type": "string", "description": "Titulo corto de la nota"},
+                "contenido": {"type": "string", "description": "Contenido completo de la nota"}
+            },
+            "required": ["titulo", "contenido"]
+        }
+    },
+    {
+        "name": "leer_notas",
+        "description": "Lee todas las notas guardadas del usuario.",
+        "input_schema": {
+            "type": "object",
+            "properties": {},
+            "required": []
+        }
     }
 ]
 
@@ -218,6 +239,37 @@ def obtener_fecha_hora():
         "formato_legible": ahora.strftime("%d de %B de %Y, %H:%M")
     }
 
+
+# ─────────────────────────────────────────────
+# TOOL: NOTAS
+# ─────────────────────────────────────────────
+
+def guardar_nota(titulo, contenido):
+    conn = sqlite3.connect('agente.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS notas 
+              (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+               titulo TEXT, contenido TEXT, 
+               fecha DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+    c.execute('INSERT INTO notas (titulo, contenido) VALUES (?, ?)', (titulo, contenido))
+    conn.commit()
+    conn.close()
+    return f"Nota guardada: {titulo}"
+
+def leer_notas():
+    conn = sqlite3.connect('agente.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS notas 
+              (id INTEGER PRIMARY KEY AUTOINCREMENT, 
+               titulo TEXT, contenido TEXT, 
+               fecha DATETIME DEFAULT CURRENT_TIMESTAMP)''')
+    c.execute('SELECT titulo, contenido, fecha FROM notas ORDER BY fecha DESC LIMIT 10')
+    notas = c.fetchall()
+    conn.close()
+    if not notas:
+        return "No hay notas guardadas."
+    return "\n".join([f"[{f}] {t}: {c}" for t, c, f in notas])
+
 def ejecutar_herramienta(nombre, argumentos):
     if nombre == "calculadora":
         return calculadora(**argumentos)
@@ -225,6 +277,10 @@ def ejecutar_herramienta(nombre, argumentos):
         return leer_archivo(**argumentos)
     if nombre == "obtener_fecha_hora":
         return obtener_fecha_hora()
+    if nombre == "guardar_nota":
+        return guardar_nota(**argumentos)
+    if nombre == "leer_notas":
+        return leer_notas()
     return f"Herramienta {nombre} no reconocida"
 
 def chat_con_agente(mensaje, historial):
