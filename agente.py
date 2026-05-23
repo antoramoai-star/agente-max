@@ -151,20 +151,88 @@ def generar_resumen():
     guardar_resumen(resumen)
     return resumen
 
+tools = [
+    {
+        "name": "calculadora",
+        "description": "Realiza operaciones matematicas basicas",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "operacion": {"type": "string", "enum": ["sumar", "restar", "multiplicar", "dividir"]},
+                "a": {"type": "number"},
+                "b": {"type": "number"}
+            },
+            "required": ["operacion", "a", "b"]
+        }
+    }
+    ,
+    {
+        "name": "leer_archivo",
+        "description": "Lee el contenido de un archivo de texto",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "ruta": {"type": "string", "description": "Ruta al archivo"}
+            },
+            "required": ["ruta"]
+        }
+    }
+]
+
+def calculadora(operacion, a, b):
+    if operacion == "sumar":       return a + b
+    if operacion == "restar":      return a - b
+    if operacion == "multiplicar": return a * b
+    if operacion == "dividir":
+        if b == 0: return "Error: division por cero"
+        return a / b
+def leer_archivo(ruta):
+    try:
+        with open(ruta, "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return f"Error: no se encontro el archivo '{ruta}'"
+    except Exception as e:
+        return f"Error al leer: {str(e)}"
+
+def ejecutar_herramienta(nombre, argumentos):
+    if nombre == "calculadora":
+        return calculadora(**argumentos)
+    if nombre == "leer_archivo":
+        return leer_archivo(**argumentos)
+    return f"Herramienta {nombre} no reconocida"
+
 def chat_con_agente(mensaje, historial):
     registros = obtener_registros_hoy()
     contexto = ""
     if registros:
         contexto = "Registros de hoy:\n" + "\n".join([f"- [{h}] {t}: {c}" for h, t, c in registros])
     messages = historial + [{"role": "user", "content": mensaje}]
-    response = client.messages.create(
-        model="claude-sonnet-4-5",
-        max_tokens=500,
-        system=f"Eres Max, agente personal de bienestar. Registras comidas, ejercicios y tareas. Se amigable y motivador.\n{contexto}",
-        messages=messages
-    )
-    mostrar_costo(response)
-    return response.content[0].text
+    while True:
+        response = client.messages.create(
+            model="claude-sonnet-4-5",
+            max_tokens=500,
+            system=f"Eres Max, agente personal de bienestar. Registras comidas, ejercicios y tareas. Se amigable y motivador.\n{contexto}",
+            tools=tools,
+            messages=messages
+        )
+        mostrar_costo(response)
+        if response.stop_reason == "tool_use":
+            messages.append({"role": "assistant", "content": response.content})
+            tool_results = []
+            for block in response.content:
+                if block.type == "tool_use":
+                    print(f"[Tool] {block.name}({block.input})")
+                    resultado = ejecutar_herramienta(block.name, block.input)
+                    print(f"[Tool] Resultado: {resultado}")
+                    tool_results.append({
+                        "type": "tool_result",
+                        "tool_use_id": block.id,
+                        "content": str(resultado)
+                    })
+            messages.append({"role": "user", "content": tool_results})
+        else:
+            return response.content[0].text
 
 # ─────────────────────────────────────────────
 # RUTAS FLASK

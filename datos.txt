@@ -1,0 +1,3 @@
+ventas_enero: 1500
+ventas_febrero: 2300
+ventas_marzo: 1800
