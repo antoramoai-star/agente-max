@@ -80,16 +80,17 @@ tr:hover td { background: #1a1a24; }
   <!-- LEFT -->
   <div class="col-left">
     <div class="card">
-      <div class="card-title">Plan Rest Days</div>
-      <div style="margin-bottom:10px">
-        <div class="day-grid" style="margin-bottom:4px">
-          <div class="day-label">M</div><div class="day-label">T</div><div class="day-label">W</div>
-          <div class="day-label">T</div><div class="day-label">F</div><div class="day-label">S</div><div class="day-label">S</div>
-        </div>
-        <div class="day-grid" id="rest-days">
-          <div class="day-box done"></div><div class="day-box done"></div><div class="day-box rest"></div>
-          <div class="day-box done"></div><div class="day-box done"></div><div class="day-box rest"></div><div class="day-box rest"></div>
-        </div>
+      <div class="card-title">Días de Entreno</div>
+      <div id="semana-fechas" style="font-size:10px;color:#6366f1;text-align:center;margin-bottom:10px;font-weight:600"></div>
+      <div class="day-grid" style="margin-bottom:6px">
+        <div class="day-label">L</div><div class="day-label">M</div><div class="day-label">X</div>
+        <div class="day-label">J</div><div class="day-label">V</div><div class="day-label">S</div><div class="day-label">D</div>
+      </div>
+      <div class="day-grid" id="entreno-days"></div>
+      <div id="entreno-count" style="font-size:11px;color:#555;text-align:center;margin-top:10px"></div>
+      <div id="semana-resumen" style="display:none;margin-top:12px;padding:10px;background:#1a1a2e;border-radius:8px;border:1px solid #6366f1">
+        <div style="font-size:10px;color:#a5b4fc;font-weight:600;margin-bottom:6px">🎯 RESUMEN SEMANAL</div>
+        <div id="resumen-contenido" style="font-size:11px;color:#888"></div>
       </div>
     </div>
 
@@ -370,9 +371,99 @@ async function agregarEjercicio() {
   }, 2000);
 }
 
+// ── SEMANA ──
+const DIAS_NOMBRES = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+let diasEntrenados = JSON.parse(localStorage.getItem('diasEntrenados') || '[]');
+
+function getSemanaActual() {
+  const hoyDate = new Date();
+  const diaSemana = (hoyDate.getDay() + 6) % 7;
+  const lunes = new Date(hoyDate);
+  lunes.setDate(hoyDate.getDate() - diaSemana);
+  const domingo = new Date(lunes);
+  domingo.setDate(lunes.getDate() + 6);
+  return { lunes, domingo };
+}
+
+function formatFecha(d) {
+  return `${d.getDate()} ${['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'][d.getMonth()]}`;
+}
+
+function renderSemana() {
+  const { lunes, domingo } = getSemanaActual();
+  document.getElementById('semana-fechas').textContent = `${formatFecha(lunes)} — ${formatFecha(domingo)}`;
+  
+  const container = document.getElementById('entreno-days');
+  container.innerHTML = '';
+  
+  for (let i = 0; i < 7; i++) {
+    const fecha = new Date(lunes);
+    fecha.setDate(lunes.getDate() + i);
+    const key = fecha.toISOString().split('T')[0];
+    const entrenado = diasEntrenados.includes(key);
+    const esHoy = fecha.toDateString() === new Date().toDateString();
+    
+    const box = document.createElement('div');
+    box.className = 'day-box' + (entrenado ? ' done' : '');
+    box.style.cursor = 'pointer';
+    box.style.position = 'relative';
+    if (esHoy) box.style.border = '2px solid #a5b4fc';
+    box.onclick = () => toggleDia(key);
+    container.appendChild(box);
+  }
+  
+  const count = diasEntrenados.filter(d => {
+    const { lunes, domingo } = getSemanaActual();
+    const fecha = new Date(d);
+    return fecha >= lunes && fecha <= domingo;
+  }).length;
+  
+  document.getElementById('entreno-count').textContent = `${count} / 4 días esta semana`;
+  
+  if (count >= 4) {
+    mostrarResumenSemanal(count);
+  } else {
+    document.getElementById('semana-resumen').style.display = 'none';
+  }
+}
+
+function toggleDia(key) {
+  if (diasEntrenados.includes(key)) {
+    diasEntrenados = diasEntrenados.filter(d => d !== key);
+  } else {
+    diasEntrenados.push(key);
+  }
+  localStorage.setItem('diasEntrenados', JSON.stringify(diasEntrenados));
+  renderSemana();
+}
+
+async function mostrarResumenSemanal(count) {
+  document.getElementById('semana-resumen').style.display = 'block';
+  const res = await fetch('/api/ejercicios');
+  const ejs = await res.json();
+  const totalKg = ejs.reduce((sum, e) => sum + (e.peso * e.repeticiones), 0);
+  document.getElementById('resumen-contenido').innerHTML = `
+    <div>✅ ${count} entrenamientos completados</div>
+    <div>💪 ${ejs.length} series registradas hoy</div>
+    <div>🏋️ ${totalKg.toLocaleString()}kg totales movidos</div>
+    <div style="margin-top:6px;color:#6366f1;cursor:pointer" onclick="pedirResumenIA()">📊 Ver análisis de Max →</div>
+  `;
+}
+
+async function pedirResumenIA() {
+  const res = await fetch('/api/chat', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({mensaje: 'Dame un resumen motivador de mi semana de entrenamiento con los datos que tienes', historial: []})
+  });
+  const data = await res.json();
+  document.getElementById('resumen-contenido').innerHTML += `<div style="margin-top:8px;color:#ccc;border-top:1px solid #333;padding-top:8px">${data.respuesta}</div>`;
+}
+
 // INIT
 loadEjercicios();
 loadProgreso();
+renderSemana();
 </script>
 </body>
 </html>
